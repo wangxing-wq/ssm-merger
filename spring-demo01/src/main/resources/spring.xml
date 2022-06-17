@@ -4,9 +4,12 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
 
-    <!--    读取数据库连接池配置信息-->
+    <!-- 连接池信息: 读取数据库连接池配置信息 -->
     <context:property-placeholder location="classpath:jdbc.properties"/>
-    <!-- 2.数据库连接池 -->
+    <!--
+         数据库连接池: 配置数据库连接池,是为了获取数据库连接
+         数据库连接池是可插拔的,可以使用任何实现DataSource规范的连接池
+     -->
     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
         <!-- 配置连接池属性 -->
         <property name="driverClassName" value="${jdbc.driver}"/>
@@ -21,14 +24,27 @@
         <property name="connectionErrorRetryAttempts" value="2"/>
     </bean>
 
-    <!--    配置mybatis SqlSessionFactoryBean-->
+    <!--
+        SqlSessionFactoryBean 必须需要一个数据源
+        这个Bean是FactoryBean 的实现,可以获取复杂的
+     -->
     <bean class="org.mybatis.spring.SqlSessionFactoryBean" id="sqlSessionFactory">
         <property name="mapperLocations" value="classpath:mapper/user.xml"/>
         <property name="dataSource" ref="dataSource"/>
+        <property name="configLocation" value="mybatis-config.xml"/>
     </bean>
 
+    <!-- 一种注册mapper的方式,这种方式比较繁琐,每一个mapper都需要配置一个bean   -->
+    <bean id="userMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="mapperInterface" value="com.wx.dao.UserDao"/>
+        <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+    </bean>
+
+    <!--     MapperScannerConfigurer: 扫描注册Bean-->
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer" id="mapperScannerConfigurer">
         <property name="basePackage" value="com.wx.dao"/>
     </bean>
+
+    <bean class="com.wx.FactoryBeanTest" id="userFactoryBean"/>
 
 </beans>

@@ -12,20 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @date 2022/3/10 23:23
  */
 @Data
-//@AllArgsConstructor
-//@NoArgsConstructor
-public class User implements BeanNameAware {
+public class User {
 
-	private String beanName;
-
-	@Override
-	public void setBeanName(String name) {
-		System.out.println("set Bean name" + name);
-		this.beanName = name;
-	}
-
-	public String getBeanName() {
-		return beanName;
-	}
-
+	private Integer id;
+	private String name;
+	private Integer age;
 }
